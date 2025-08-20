@@ -30,7 +30,7 @@ async def welcome(project_id: str,file: UploadFile,
             }
         )
 
-    file_path = data_controller.generate_unique_filename(
+    file_path, file_id = data_controller.generate_unique_filepath(
         orig_filename=file.filename,
         project_id=project_id
     )
@@ -44,14 +44,15 @@ async def welcome(project_id: str,file: UploadFile,
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
-                "message:" : ResponseMessage.UPLOAD_fAILED.value
+                "message:" : ResponseMessage.UPLOAD_fAILED.value,
             }
         )
             
 
     return JSONResponse(
     content={
-        "message:" : ResponseMessage.UPLOAD_WITH_SUCCES.value
+        "message:" : ResponseMessage.UPLOAD_WITH_SUCCES.value,
+        "file_id": file_id,
     }
 )
 
