@@ -6,11 +6,11 @@ from helpers.config import get_settings
 
 @asynccontextmanager
 
-async def lifespan():
+async def lifespan(app: FastAPI):
     # Startup code
     settings = get_settings()
-    app.mongodb_conn = AsyncIOMotorClient(settings.MONGO_URL)
-    app.mongodb = app.mongodb_client[settings.MONGO_DB_NAME]
+    app.mongodb_client = AsyncIOMotorClient(settings.MONGO_URL)
+    app.db_client = app.mongodb_client[settings.MONGO_DB_NAME]
     print("Connected to the MongoDB database")
 
     yield
@@ -19,7 +19,7 @@ async def lifespan():
     app.mongodb_client.close()
     print("Closed connection to the MongoDB database")
 
-app=  FastAPI(lifespan=lifespan)
+app =  FastAPI(lifespan=lifespan)
 
 app.include_router(base.base_router)
 
