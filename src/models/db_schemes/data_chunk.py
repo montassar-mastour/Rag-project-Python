@@ -13,3 +13,14 @@ class DataChunk(BaseModel):
         arbitrary_types_allowed=True,
         populate_by_name=True,   # allow using "id" instead of "_id"
     )
+    @classmethod
+    def get_indexes(cls):
+        return [
+            {
+                "keys": [
+                    ("chunk_project_id", 1)
+                    ],
+                    "name": "chunk_project_id_index_1",
+                    "unique": False
+            }
+        ]
