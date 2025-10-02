@@ -11,3 +11,5 @@ class ResponseMessage(Enum):
     UPLOAD_fAILED="Upload_Upload_failed"
     PROCESSING_FAILED="Processing Failed"
     PROCESSING_SUCCESS="Processing Success"
+    NO_FILE_ERROR="No Files Found"
+    FILE_ID_ERROR="No Files Found with thI ID"
