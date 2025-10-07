@@ -1,11 +1,11 @@
 from .providers import QdrantDBProvider
 from .VectorDBEnums import VectorDBEnums
-from controllers.BaseController import BaseController
+from controllers.BaseController import BaseControllers
 
 class VectorDBProviderFactory:
     def __init__(self, config):
         self.config = config
-        self.base_controller = BaseController()
+        self.base_controller = BaseControllers()
 
     def create(self, provider: str):
         if provider == VectorDBEnums.QDRANT.value:
