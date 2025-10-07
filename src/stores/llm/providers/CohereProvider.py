@@ -28,7 +28,7 @@ class CohereProvider(LLMInterface):
         self.embedding_model_id = model_id
         self.embedding_size = embedding_size
 
-    def process_test(self, text: str):
+    def process_text(self, text: str):
         return text[:self.default_input_max_caracters].strip()
 
     
@@ -50,7 +50,7 @@ class CohereProvider(LLMInterface):
         response = self.client.chat(
             model=self.generation_model_id,
             chat_history=chat_history,
-            messages=self.process_test(prompt),
+            messages=self.process_text(prompt),
             max_tokens=max_output_tokens,
             temperature=temperature
         )
@@ -77,20 +77,23 @@ class CohereProvider(LLMInterface):
         
         response = self.client.embed(
             model=self.embedding_model_id,
-            texts=[self.process_test(text)],
-            type=input_type,
+            texts=[self.process_text(text)],
+            input_type=input_type,
             embedding_types=['float']
         )
 
 
-        if not response or not response.embeddings or not response.embeddings.float:
-            self.logger.error("No embedding returned from Cohere.")
-            return None
+        if response is None:
+            raise ValueError("No response from Cohere API")
+
+        if not hasattr(response, "embeddings") or not hasattr(response.embeddings, "float"):
+            raise ValueError("Invalid embedding structure from Cohere API")
+        
         return response.embeddings.float[0]
 
     
     def construct_prompt(self, prompt: str, role: str):
         return {
             "role": role,
-            "content": self.process_test(prompt)
+            "content": self.process_text(prompt)
         }

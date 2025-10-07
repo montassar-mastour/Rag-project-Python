@@ -16,7 +16,7 @@ class OpenAIProvider(LLMInterface):
         self.embedding_model_id = None
         self.embedding_size = None
 
-        self.client = OpenAI(api_key=self.api_key, api_url=self.api_url)
+        self.client = OpenAI(api_key=self.api_key)
         self.logger = logging.getLogger(__name__)
 
             
@@ -28,7 +28,7 @@ class OpenAIProvider(LLMInterface):
         self.embedding_model_id = model_id
         self.embedding_size = embedding_size
 
-    def process_test(self, text: str):
+    def process_text(self, text: str):
         return text[:self.default_input_max_caracters].strip()
 
     
@@ -84,5 +84,5 @@ class OpenAIProvider(LLMInterface):
     def construct_prompt(self, prompt: str, role: str):
         return {
             "role": role,
-            "content": self.process_test(prompt)
+            "content": self.process_text(prompt)
         }
