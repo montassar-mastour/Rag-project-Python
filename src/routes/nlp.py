@@ -133,7 +133,7 @@ async def search_index(request:Request, project_id: str,search_request: SearchRe
         text=search_request.text,
         limit=search_request.limit
     )
-    print(results)
+    
 
     if not results :
             return JSONResponse(
@@ -146,7 +146,7 @@ async def search_index(request:Request, project_id: str,search_request: SearchRe
     return JSONResponse(
         content={
             "signal" : ResponseMessage.VECTORDB_SEARCH_SUCCESS.value,
-            "result" : results
+            "result" : [result.dict() for result in results]
 
         }
     )
