@@ -18,6 +18,7 @@ class CohereProvider(LLMInterface):
 
         self.client = cohere.Client(api_key= self.api_key)
         self.logger = logging.getLogger(__name__)
+        self.enum = CohereEnums
 
             
     def set_generate_method(self, model_id: str) :
@@ -37,7 +38,7 @@ class CohereProvider(LLMInterface):
         if not self.client:
             self.logger.error("Cohere was not set")
             return None
-        if not self.egeneration_model_id:
+        if not self.generation_model_id:
             self.logger.error("generation model for Cohere was not set.")
             return None
         
@@ -46,11 +47,16 @@ class CohereProvider(LLMInterface):
         if temperature is None:
             temperature = self.default_generation_temperature
 
+        clean_history = [
+            h for h in chat_history
+            if h.get("message") and isinstance(h.get("message"), str) and h["message"].strip() != ""
+        ]
+
 
         response = self.client.chat(
             model=self.generation_model_id,
-            chat_history=chat_history,
-            messages=self.process_text(prompt),
+            chat_history=clean_history,
+            message=self.process_text(prompt),
             max_tokens=max_output_tokens,
             temperature=temperature
         )
