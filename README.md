@@ -6,7 +6,15 @@ This is a prototype of the implementation of the RAG model for question answerin
 
 - Python 3.8 or later
 
-## Install Python unsing Conda
+### Install Dependencies
+
+```bach
+$ sudo apt update
+$ sudo apt install libpq-dev gcc python3-dev
+```
+
+
+### Install Python unsing Conda
 
 1) download and install Conda from [https://repo.anaconda.com/archive/](I downloaded Anaconda3-2025.06-0-Linux-x86_64.sh )
 
@@ -35,7 +43,7 @@ $ cp .env.example .env
 
 Set your environment variables in the `.env` file. 
 
-## Run Docker Compose services
+### Run Docker Compose services
 
 ```bash
 $ cd docker
@@ -51,7 +59,7 @@ $ sudo docker compose up -d
 
 
 
-## Run the FastAPI server
+### Run the FastAPI server
 ```bash
 $ uvicorn main:app --reload --host 0.0.0.0 --port 5000
 ```
