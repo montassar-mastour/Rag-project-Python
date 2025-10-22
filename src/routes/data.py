@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter, Depends, UploadFile, status, Request
 from fastapi.responses import JSONResponse
 from helpers.config import get_settings,settings
-from controllers import DataController, ProjectController, ProcessController
+from controllers import DataController, ProjectController, ProcessController, NLPController
 import os,aiofiles, logging
 from models import ResponseMessage
 from .schemes.data import ProcessRequest
@@ -103,6 +103,13 @@ async def process_endpoint(request:Request, project_id: int, process_request: Pr
         project_id=project_id
     )
 
+    nlp_controller = NLPController(
+        vectordb_client= request.app.vectordb_client,
+        generation_client=request.app.generation_client ,
+        embedding_client=request.app.embedding_client,
+        template_parser=request.app.template_parser
+    )
+
     asset_model = await AssetModel.create_instances(
             db_client=request.app.db_client
         )
@@ -149,6 +156,11 @@ async def process_endpoint(request:Request, project_id: int, process_request: Pr
         )
     
     if do_reset == 1:
+        # delete associated vectors collections
+        collection_name = nlp_controller.create_collection_name(project_id=project.project_id)
+        _= await request.app.vectordb_client.delete_collection(collection_name= collection_name)
+
+        # delete associate chunks
         _ = await chunk_model.delete_chunks_by_project_id(
             project_id=project.project_id
         )   
@@ -177,7 +189,7 @@ async def process_endpoint(request:Request, project_id: int, process_request: Pr
                     "message": ResponseMessage.PROCESSING_FAILED.value,
                 }
             )
-        print(file_chunks)
+
         file_chunks_records= [
             DataChunk(
                 chunk_text=chunk.page_content,
