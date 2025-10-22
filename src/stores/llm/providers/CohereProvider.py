@@ -3,6 +3,7 @@ from openai import OpenAI
 import logging
 from ..LLMEnums import CohereEnums, DocumentTypeEnums
 import cohere
+from typing import List,Union
 
 class CohereProvider(LLMInterface):
     def __init__(self, api_key: str, default_input_max_caracters:int=1000, 
@@ -68,10 +69,14 @@ class CohereProvider(LLMInterface):
     
 
          
-    def embed_text(self, text: str, document_type: str=None):
+    def embed_text(self, text: Union[str, List[str]] , document_type: str=None):
         if not self.client:
             self.logger.error("Cohere was not set")
             return None
+        
+        if isinstance(text, str):
+            text = [text]
+
         if not self.embedding_model_id:
             self.logger.error("Embedding model for OpeCoherenAI was not set.")
             return None
@@ -83,7 +88,7 @@ class CohereProvider(LLMInterface):
         
         response = self.client.embed(
             model=self.embedding_model_id,
-            texts=[self.process_text(text)],
+            texts=[self.process_text(t) for t in text],
             input_type=input_type,
             embedding_types=['float']
         )
@@ -95,7 +100,8 @@ class CohereProvider(LLMInterface):
         if not hasattr(response, "embeddings") or not hasattr(response.embeddings, "float"):
             raise ValueError("Invalid embedding structure from Cohere API")
         
-        return response.embeddings.float[0]
+
+        return [f for f in response.embeddings.float]
 
     
     def construct_prompt(self, prompt: str, role: str):
