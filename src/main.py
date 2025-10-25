@@ -7,6 +7,7 @@ from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
 from stores.llm.templates.Template_Parser import Template_Parser
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+from  utils.metrics import setup_metrics
 
 @asynccontextmanager
 
@@ -49,6 +50,8 @@ async def lifespan(app: FastAPI):
     app.vectordb_client.disconnect()
 
 app =  FastAPI(lifespan=lifespan)
+
+setup_metrics(app)
 
 app.include_router(base.base_router)
 
